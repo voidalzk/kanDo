@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Task } from '../../models/task.model';
 import { TaskCardComponent } from '../task-card/task-card.component';
@@ -8,13 +9,23 @@ import { TaskService } from '../../services/task.service';
 @Component({
   selector: 'app-kanban-board',
   standalone: true,
-  imports: [CommonModule, DragDropModule, TaskCardComponent],
-  templateUrl: './kanban-board.component.html' // Changed from inline template
+  imports: [CommonModule, DragDropModule, TaskCardComponent, FormsModule],
+  templateUrl: './kanban-board.component.html'
 })
 export class KanbanBoardComponent implements OnInit {
   todo: Task[] = [];
   inProgress: Task[] = [];
   done: Task[] = [];
+  isModalOpen: boolean = false;
+  newTask: Partial<Task> = {
+    title: '',
+    description: '',
+    priority: 'low',
+    assignee: '',
+    dueDate: new Date(),
+    tags: []
+  };
+  tag: string = ''; // For binding the tag input
 
   constructor(private taskService: TaskService) {}
 
@@ -63,78 +74,73 @@ export class KanbanBoardComponent implements OnInit {
 
   loadTasks() {
     const tasks = this.taskService.getTasks();
-    const hasStoredTasks = tasks.todo.length || tasks.inProgress.length || tasks.done.length;
+    this.todo = tasks.todo;
+    this.inProgress = tasks.inProgress;
+    this.done = tasks.done;
+  }
 
-    if (hasStoredTasks) {
-      this.todo = tasks.todo;
-      this.inProgress = tasks.inProgress;
-      this.done = tasks.done;
-    } else {
-      this.todo = [
-        {
-          id: '1',
-          title: 'Implement authentication',
-          description: 'Add user login and registration functionality',
-          priority: 'high',
-          status: 'todo',
-          createdAt: new Date(),
-          dueDate: new Date(2024, 3, 15),
-          assignee: 'John Doe',
-          tags: ['frontend', 'UX']
-        },
-        {
-          id: '3',
-          title: 'Setup database',
-          description: 'Create database schema and tables',
-          priority: 'medium',
-          status: 'todo',
-          createdAt: new Date(),
-          dueDate: new Date(2024, 3, 25),
-          assignee: 'Alice Johnson',
-          tags: ['backend']
-        }
-      ];
+  deleteTask(task: Task) {
+    this.todo = this.todo.filter(t => t.id !== task.id);
+    this.inProgress = this.inProgress.filter(t => t.id !== task.id);
+    this.done = this.done.filter(t => t.id !== task.id);
+    this.saveTasks();
+  }
 
-      this.inProgress = [
-        {
-          id: '2',
-          title: 'Design dashboard',
-          description: 'Create mockups for the user dashboard',
-          priority: 'medium',
-          status: 'inProgress',
-          createdAt: new Date(),
-          dueDate: new Date(2024, 4, 10),
-          assignee: 'Alice Johnson',
-          tags: ['design']
-        },
-        {
-          id: '5',
-          title: 'Implement user profile',
-          description: 'Add user profile page with user details',
-          priority: 'high',
-          status: 'inProgress',
-          createdAt: new Date(),
-          dueDate: new Date(2024, 4, 15),
-          assignee: 'John Doe',
-          tags: ['frontend']
-        }
-      ];
+  openModal() {
+    this.isModalOpen = true;
+    this.newTask = {
+      title: '',
+      description: '',
+      priority: 'low',
+      assignee: '',
+      dueDate: new Date(),
+      tags: []
+    };
+    this.tag = '';
+  }
 
-      this.done = [
-        {
-          id: '4',
-          title: 'Project setup',
-          description: 'Initialize Angular project with required dependencies',
-          priority: 'low',
-          status: 'done',
-          createdAt: new Date(),
-          dueDate: new Date(2024, 2, 20),
-          assignee: 'Jane Smith',
-          tags: ['setup']
-        }
-      ];
+  closeModal() {
+    this.isModalOpen = false;
+  }
 
-      this.saveTasks();
+  saveTask() {
+    if (!this.newTask.title?.trim() || !this.newTask.assignee?.trim() || !this.newTask.dueDate) {
+      // Optionally, add user feedback for validation
+      return;
     }
+
+    const task: Task = {
+      id: this.generateUniqueId(),
+      title: this.newTask.title.trim(),
+      description: this.newTask.description?.trim() || '',
+      priority: this.newTask.priority as 'low' | 'medium' | 'high',
+      status: 'todo',
+      createdAt: new Date(),
+      dueDate: new Date(this.newTask.dueDate),
+      assignee: this.newTask.assignee.trim(),
+      tags: this.newTask.tags || []
+    };
+
+    this.todo.push(task);
+    this.saveTasks();
+    this.closeModal();
+  }
+
+  addTag() {
+    const newTag = this.tag.trim();
+    if (newTag && !this.newTask.tags?.includes(newTag)) {
+      this.newTask.tags?.push(newTag);
+    }
+    this.tag = '';
+  }
+
+  removeTag(tagToRemove: string) {
+    if (this.newTask.tags) {
+      this.newTask.tags = this.newTask.tags.filter(tag => tag !== tagToRemove);
+    }
+  }
+
+  private generateUniqueId(): string {
+    return Date.now().toString();
   }
 }
