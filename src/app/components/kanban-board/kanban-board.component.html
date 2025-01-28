@@ -1,0 +1,59 @@
+<!-- Ensure each cdkDropList has a unique id -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- To Do Column -->
+  <div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-semibold mb-4 text-gray-700">To Do</h2>
+    <div
+      cdkDropList
+      id="todoList"
+      [cdkDropListData]="todo"
+      [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+      class="min-h-[200px] space-y-3"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <app-task-card
+        *ngFor="let task of todo"
+        [task]="task"
+        cdkDrag
+      ></app-task-card>
+    </div>
+  </div>
+
+  <!-- In Progress Column -->
+  <div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-semibold mb-4 text-gray-700">In Progress</h2>
+    <div
+      cdkDropList
+      id="inProgressList"
+      [cdkDropListData]="inProgress"
+      [cdkDropListConnectedTo]="['todoList', 'doneList']"
+      class="min-h-[200px] space-y-3"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <app-task-card
+        *ngFor="let task of inProgress"
+        [task]="task"
+        cdkDrag
+      ></app-task-card>
+    </div>
+  </div>
+
+  <!-- Done Column -->
+  <div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-semibold mb-4 text-gray-700">Done</h2>
+    <div
+      cdkDropList
+      id="doneList"
+      [cdkDropListData]="done"
+      [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
+      class="min-h-[200px] space-y-3"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <app-task-card
+        *ngFor="let task of done"
+        [task]="task"
+        cdkDrag
+      ></app-task-card>
+    </div>
+  </div>
+</div>
