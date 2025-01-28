@@ -16,7 +16,16 @@ export class KanbanBoardComponent implements OnInit {
   todo: Task[] = [];
   inProgress: Task[] = [];
   done: Task[] = [];
-  isModalOpen: boolean = false;
+
+  // Controle dos Modais
+  isAddModalOpen: boolean = false;
+  isEditModalOpen: boolean = false;
+
+  // Task sendo editada
+  editingTask: Partial<Task> = {};
+  editTag: string = '';
+
+  // Nova Task
   newTask: Partial<Task> = {
     title: '',
     description: '',
@@ -25,7 +34,7 @@ export class KanbanBoardComponent implements OnInit {
     dueDate: new Date(),
     tags: []
   };
-  tag: string = ''; // For binding the tag input
+  tag: string = '';
 
   constructor(private taskService: TaskService) {}
 
@@ -33,6 +42,25 @@ export class KanbanBoardComponent implements OnInit {
     this.loadTasks();
   }
 
+  // Função para carregar as tasks do serviço
+  loadTasks() {
+    const tasks = this.taskService.getTasks();
+    this.todo = tasks.todo;
+    this.inProgress = tasks.inProgress;
+    this.done = tasks.done;
+  }
+
+  // Função para salvar as tasks no serviço
+  saveTasks() {
+    const tasks = {
+      todo: this.todo,
+      inProgress: this.inProgress,
+      done: this.done
+    };
+    this.taskService.saveTasks(tasks);
+  }
+
+  // Função para lidar com o drop de drag and drop
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -44,7 +72,7 @@ export class KanbanBoardComponent implements OnInit {
         event.currentIndex,
       );
 
-      // Update the status of the moved task
+      // Atualiza o status da task movida
       const movedTask = event.container.data[event.currentIndex];
       switch (event.container.id) {
         case 'todoList':
@@ -63,22 +91,7 @@ export class KanbanBoardComponent implements OnInit {
     this.saveTasks();
   }
 
-  saveTasks() {
-    const tasks = {
-      todo: this.todo,
-      inProgress: this.inProgress,
-      done: this.done
-    };
-    this.taskService.saveTasks(tasks);
-  }
-
-  loadTasks() {
-    const tasks = this.taskService.getTasks();
-    this.todo = tasks.todo;
-    this.inProgress = tasks.inProgress;
-    this.done = tasks.done;
-  }
-
+  // Função para deletar uma task
   deleteTask(task: Task) {
     this.todo = this.todo.filter(t => t.id !== task.id);
     this.inProgress = this.inProgress.filter(t => t.id !== task.id);
@@ -86,8 +99,9 @@ export class KanbanBoardComponent implements OnInit {
     this.saveTasks();
   }
 
-  openModal() {
-    this.isModalOpen = true;
+  // Função para abrir o modal de adição
+  openAddModal() {
+    this.isAddModalOpen = true;
     this.newTask = {
       title: '',
       description: '',
@@ -99,13 +113,17 @@ export class KanbanBoardComponent implements OnInit {
     this.tag = '';
   }
 
-  closeModal() {
-    this.isModalOpen = false;
+  // Função para fechar o modal de adição
+  closeAddModal() {
+    this.isAddModalOpen = false;
+    this.newTask = {};
+    this.tag = '';
   }
 
+  // Função para salvar uma nova task
   saveTask() {
     if (!this.newTask.title?.trim() || !this.newTask.assignee?.trim() || !this.newTask.dueDate) {
-      // Optionally, add user feedback for validation
+      alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -123,23 +141,98 @@ export class KanbanBoardComponent implements OnInit {
 
     this.todo.push(task);
     this.saveTasks();
-    this.closeModal();
+    this.closeAddModal();
   }
 
+  // Função para adicionar uma tag na criação
   addTag() {
     const newTag = this.tag.trim();
     if (newTag && !this.newTask.tags?.includes(newTag)) {
-      this.newTask.tags?.push(newTag);
+      this.newTask.tags = this.newTask.tags ? [...this.newTask.tags, newTag] : [newTag];
     }
     this.tag = '';
   }
 
+  // Função para remover uma tag na criação
   removeTag(tagToRemove: string) {
     if (this.newTask.tags) {
       this.newTask.tags = this.newTask.tags.filter(tag => tag !== tagToRemove);
     }
   }
 
+  // Função para lidar com o evento de edição emitido pelo TaskCardComponent
+  editTask(task: Task) {
+    this.editingTask = { ...task };
+    this.isEditModalOpen = true;
+    this.editTag = '';
+  }
+
+  // Função para salvar as alterações da task editada
+  saveEdit() {
+    if (
+      !this.editingTask.title?.trim() ||
+      !this.editingTask.assignee?.trim() ||
+      !this.editingTask.dueDate
+    ) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const updatedTask: Task = {
+      id: this.editingTask.id!,
+      title: this.editingTask.title.trim(),
+      description: this.editingTask.description?.trim() || '',
+      priority: this.editingTask.priority as 'low' | 'medium' | 'high',
+      status: this.editingTask.status as 'todo' | 'inProgress' | 'done',
+      createdAt: this.editingTask.createdAt!,
+      dueDate: new Date(this.editingTask.dueDate),
+      assignee: this.editingTask.assignee.trim(),
+      tags: this.editingTask.tags || []
+    };
+
+    // Atualiza a task na lista correspondente
+    switch (updatedTask.status) {
+      case 'todo':
+        this.todo = this.todo.map(t => (t.id === updatedTask.id ? updatedTask : t));
+        break;
+      case 'inProgress':
+        this.inProgress = this.inProgress.map(t => (t.id === updatedTask.id ? updatedTask : t));
+        break;
+      case 'done':
+        this.done = this.done.map(t => (t.id === updatedTask.id ? updatedTask : t));
+        break;
+      default:
+        break;
+    }
+
+    this.saveTasks();
+    this.closeEditModal();
+  }
+
+  // Função para fechar o modal de edição
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.editingTask = {};
+    this.editTag = '';
+  }
+
+  // Função para adicionar uma tag na edição
+  addEditTag() {
+    const newTag = this.editTag.trim();
+    if (newTag && !this.editingTask.tags?.includes(newTag)) {
+      this.editingTask.tags = this.editingTask.tags ? [...this.editingTask.tags, newTag] : [newTag];
+    }
+    this.editTag = '';
+  }
+
+  // Função para remover uma tag na edição
+  removeEditTag(tagToRemove: string) {
+    if (this.editingTask.tags) {
+      this.editingTask.tags = this.editingTask.tags.filter(tag => tag !== tagToRemove);
+    }
+  }
+
+  // Função para gerar um ID único
   private generateUniqueId(): string {
     return Date.now().toString();
   }

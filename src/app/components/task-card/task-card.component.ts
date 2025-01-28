@@ -12,6 +12,9 @@ import { Task } from '../../models/task.model';
 export class TaskCardComponent {
   @Input() task!: Task;
   @Output() delete = new EventEmitter<Task>();
+  @Output() edit = new EventEmitter<Task>();
+
+  isMenuOpen: boolean = false;
 
   getPriorityClass(): string {
     const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full ';
@@ -27,7 +30,36 @@ export class TaskCardComponent {
     }
   }
 
+  // Função para obter o texto de prioridade em português
+  getPriorityText(): string {
+    switch (this.task.priority) {
+      case 'high':
+        return 'Alta';
+      case 'medium':
+        return 'Média';
+      case 'low':
+        return 'Baixa';
+      default:
+        return 'Indefinida';
+    }
+  }
+
   onDelete(): void {
     this.delete.emit(this.task);
+  }
+
+  onEdit(): void {
+    this.edit.emit(this.task);
+    this.isMenuOpen = false;
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  confirmDelete(): void {
+    if (confirm('Você tem certeza que deseja excluir esta tarefa?')) {
+      this.delete.emit(this.task);
+    }
   }
 }
