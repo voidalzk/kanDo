@@ -5,6 +5,8 @@ import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from 
 import { Task } from '../../models/task.model';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { TaskService } from '../../services/task.service';
+import { BoardService } from '../../services/board.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-kanban-board',
@@ -36,28 +38,38 @@ export class KanbanBoardComponent implements OnInit {
   };
   tag: string = '';
 
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private boardService: BoardService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.loadTasks();
-  }
-
-  // Função para carregar as tasks do serviço
-  loadTasks() {
-    const tasks = this.taskService.getTasks();
-    this.todo = tasks.todo;
-    this.inProgress = tasks.inProgress;
-    this.done = tasks.done;
+    this.route.params.subscribe(params => {
+      const boardId = params['id'];
+      // Se não houver ID, assume que é o board antigo (id: '1')
+      const actualBoardId = boardId || '1';
+      const board = this.boardService.getBoardById(actualBoardId);
+      if (board) {
+        this.todo = board.tasks.todo;
+        this.inProgress = board.tasks.inProgress;
+        this.done = board.tasks.done;
+      }
+    });
   }
 
   // Função para salvar as tasks no serviço
   saveTasks() {
-    const tasks = {
-      todo: this.todo,
-      inProgress: this.inProgress,
-      done: this.done
-    };
-    this.taskService.saveTasks(tasks);
+    const boardId = this.route.snapshot.params['id'] || '1';
+    const board = this.boardService.getBoardById(boardId);
+    if (board) {
+      board.tasks = {
+        todo: this.todo,
+        inProgress: this.inProgress,
+        done: this.done
+      };
+      this.boardService.saveBoard(board);
+    }
   }
 
   // Função para lidar com o drop de drag and drop

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import { HeaderComponent } from './material/header/header.component';
 import { FooterComponent } from './material/footer/footer.component';
@@ -13,7 +13,8 @@ import { FooterComponent } from './material/footer/footer.component';
     RouterModule,
     KanbanBoardComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    RouterOutlet
   ],
   templateUrl: './app.component.html'
 })
