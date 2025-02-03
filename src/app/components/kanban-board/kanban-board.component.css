@@ -1,57 +1,41 @@
-.kanban-grid {
-    display: grid;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    max-width: 80rem;
-    margin: 0 auto;
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--primary-400) var(--neutral-200); /* Firefox */
   }
   
-  @media (min-width: 768px) {
-    .kanban-grid {
-      grid-template-columns: repeat(3, 1fr);
+  /* Custom scrollbar for Webkit browsers */
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: var(--neutral-200);
+    border-radius: 3px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background-color: var(--primary-400);
+    border-radius: 3px;
+  }
+  
+  /* Touch-friendly drop zones */
+  .cdk-drop-list {
+    touch-action: pan-y pinch-zoom;
+  }
+  
+  /* Responsive modals */
+  @media (max-width: 640px) {
+    .modal-content {
+      margin: 1rem;
+      max-height: calc(100vh - 2rem);
     }
-  }
-  
-  .kanban-column {
-    background-color: var(--neutral-50);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    min-height: calc(100vh - 12rem);
-  }
-  
-  .column-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--border);
-  }
-  
-  .column-title {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  
-  .drop-zone {
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .cdk-drag-preview {
-    box-shadow: var(--shadow-lg);
-  }
-  
-  .cdk-drag-placeholder {
-    opacity: 0;
-  }
-  
-  .cdk-drag-animating {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  }
-  
-  .drop-zone.cdk-drop-list-dragging .task-card:not(.cdk-drag-placeholder) {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    
+    .form-actions {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+    }
   }

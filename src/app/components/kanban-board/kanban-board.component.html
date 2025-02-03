@@ -1,298 +1,302 @@
-<!-- Estrutura das Colunas -->
-<div class="grid grid-cols-3 gap-6">
-  
-  <!-- To Do Column -->
-  <div class="bg-white rounded-lg shadow p-4">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
-      <button
-        class="text-green-500 hover:text-green-700 focus:outline-none"
-        (click)="openAddModal()"
-      >
-        <span class="material-icons">add</span>
-      </button>
-    </div>
-    <div
-      cdkDropList
-      id="todoList"
-      [cdkDropListData]="todo"
-      [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
-      class="min-h-[200px] space-y-3"
-      (cdkDropListDropped)="drop($event)"
-    >
-      <app-task-card
-        *ngFor="let task of todo"
-        [task]="task"
-        (delete)="deleteTask($event)"
-        (edit)="editTask($event)"
-        cdkDrag
-      ></app-task-card>
-    </div>
-  </div>
-  
-  <!-- In Progress Column -->
-  <div class="bg-white rounded-lg shadow p-4">
-    <h2 class="text-lg font-semibold mb-4 text-gray-700">In Progress</h2>
-    <div
-      cdkDropList
-      id="inProgressList"
-      [cdkDropListData]="inProgress"
-      [cdkDropListConnectedTo]="['todoList', 'doneList']"
-      class="min-h-[200px] space-y-3"
-      (cdkDropListDropped)="drop($event)"
-    >
-      <app-task-card
-        *ngFor="let task of inProgress"
-        [task]="task"
-        (delete)="deleteTask($event)"
-        (edit)="editTask($event)"
-        cdkDrag
-      ></app-task-card>
-    </div>
-  </div>
-  
-  <!-- Done Column -->
-  <div class="bg-white rounded-lg shadow p-4">
-    <h2 class="text-lg font-semibold mb-4 text-gray-700">Done</h2>
-    <div
-      cdkDropList
-      id="doneList"
-      [cdkDropListData]="done"
-      [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
-      class="min-h-[200px] space-y-3"
-      (cdkDropListDropped)="drop($event)"
-    >
-      <app-task-card
-        *ngFor="let task of done"
-        [task]="task"
-        (delete)="deleteTask($event)"
-        (edit)="editTask($event)"
-        cdkDrag
-      ></app-task-card>
-    </div>
-  </div>
-  
-</div>
-
-<!-- Modal de Adição de Task -->
-<div
-  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-  *ngIf="isAddModalOpen"
->
-  <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
-    <h2 class="text-xl font-semibold mb-4">Adicionar Nova Task</h2>
-    <form (ngSubmit)="saveTask()">
-      <!-- Campos do Formulário para Adicionar Task -->
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Nome da Task</label>
-        <input
-          type="text"
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="newTask.title"
-          name="title"
-          required
-        />
-      </div>
+<!-- Container with horizontal scroll -->
+<div class="overflow-x-auto">
+  <!-- Kanban Board Layout -->
+  <div class="min-w-[768px] p-4"> <!-- Minimum width to prevent squishing -->
+    <!-- Columns Grid -->
+    <div class="grid grid-cols-3 gap-4 md:gap-6">
       
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Descrição</label>
-        <textarea
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="newTask.description"
-          name="description"
-          rows="3"
-        ></textarea>
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Prioridade</label>
-        <select
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="newTask.priority"
-          name="priority"
-          required
-        >
-          <option value="low">Baixa</option>
-          <option value="medium">Média</option>
-          <option value="high">Alta</option>
-        </select>
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
-        <input
-          type="text"
-          class="flex-1 border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="tag"
-          name="tag"
-          placeholder="Insira uma tag e pressione Enter"
-          (keydown.enter)="addTag()"
-        />
-        <button
-          type="button"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
-          (click)="addTag()"
-        >
-          Adicionar Tag
-        </button>
-        
-        <!-- Exibição das Tags Adicionadas -->
-        <div class="flex flex-wrap mt-2 gap-2">
-          <span
-            *ngFor="let t of newTask.tags"
-            class="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+      <!-- To Do Column -->
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
+          <button
+            class="text-green-500 hover:text-green-700 focus:outline-none p-2"
+            (click)="openAddModal()"
           >
-            {{ t }}
-            <button
-              type="button"
-              class="ml-2 text-sm text-blue-500 hover:text-blue-700 focus:outline-none"
-              (click)="removeTag(t)"
-            >
-              &times;
-            </button>
-          </span>
+            <span class="material-icons">add</span>
+          </button>
+        </div>
+        <div
+          cdkDropList
+          id="todoList"
+          [cdkDropListData]="todo"
+          [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+          class="min-h-[200px] space-y-3"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <app-task-card
+            *ngFor="let task of todo"
+            [task]="task"
+            (delete)="deleteTask($event)"
+            (edit)="editTask($event)"
+            cdkDrag
+          ></app-task-card>
         </div>
       </div>
       
-      <!-- Ações do Formulário -->
-      <div class="flex justify-end space-x-2">
-        <button
-          type="button"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg"
-          (click)="closeAddModal()"
+      <!-- In Progress Column -->
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+        <h2 class="text-lg font-semibold mb-4 text-gray-700">In Progress</h2>
+        <div
+          cdkDropList
+          id="inProgressList"
+          [cdkDropListData]="inProgress"
+          [cdkDropListConnectedTo]="['todoList', 'doneList']"
+          class="min-h-[200px] space-y-3"
+          (cdkDropListDropped)="drop($event)"
         >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        >
-          Salvar
-        </button>
+          <app-task-card
+            *ngFor="let task of inProgress"
+            [task]="task"
+            (delete)="deleteTask($event)"
+            (edit)="editTask($event)"
+            cdkDrag
+          ></app-task-card>
+        </div>
       </div>
-    </form>
+      
+      <!-- Done Column -->
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+        <h2 class="text-lg font-semibold mb-4 text-gray-700">Done</h2>
+        <div
+          cdkDropList
+          id="doneList"
+          [cdkDropListData]="done"
+          [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
+          class="min-h-[200px] space-y-3"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <app-task-card
+            *ngFor="let task of done"
+            [task]="task"
+            (delete)="deleteTask($event)"
+            (edit)="editTask($event)"
+            cdkDrag
+          ></app-task-card>
+        </div>
+      </div>
+      
+    </div>
   </div>
 </div>
 
-<!-- Modal de Edição de Task -->
+<!-- Modal Responsivo -->
 <div
-  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-  *ngIf="isEditModalOpen"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
+  *ngIf="isAddModalOpen || isEditModalOpen"
 >
-  <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
-    <h2 class="text-xl font-semibold mb-4">Editar Task</h2>
-    <form (ngSubmit)="saveEdit()">
-      <!-- Campos do Formulário para Editar Task -->
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Nome da Task</label>
-        <input
-          type="text"
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="editingTask.title"
-          name="title"
-          required
-        />
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Descrição</label>
-        <textarea
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="editingTask.description"
-          name="description"
-          rows="3"
-        ></textarea>
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Prioridade</label>
-        <select
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="editingTask.priority"
-          name="priority"
-          required
-        >
-          <option value="low">Baixa</option>
-          <option value="medium">Média</option>
-          <option value="high">Alta</option>
-        </select>
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
-        <input
-          type="text"
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="editingTask.assignee"
-          name="assignee"
-          required
-        />
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Data Limite</label>
-        <input
-          type="date"
-          class="w-full border border-gray-300 rounded-lg p-2"
-          [(ngModel)]="editingTask.dueDate"
-          name="dueDate"
-          required
-        />
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-2">Tags</label>
-        <div class="flex items-center gap-2">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-4 md:p-6">
+    <!-- Modal de Adição de Task -->
+    <div *ngIf="isAddModalOpen">
+      <h2 class="text-xl font-semibold mb-4">Adicionar Nova Task</h2>
+      <form (ngSubmit)="saveTask()">
+        <!-- Campos do Formulário para Adicionar Task -->
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Nome da Task</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="newTask.title"
+            name="title"
+            required
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Descrição</label>
+          <textarea
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="newTask.description"
+            name="description"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Prioridade</label>
+          <select
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="newTask.priority"
+            name="priority"
+            required
+          >
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
           <input
             type="text"
             class="flex-1 border border-gray-300 rounded-lg p-2"
-            [(ngModel)]="editTag"
-            name="editTag"
+            [(ngModel)]="tag"
+            name="tag"
             placeholder="Insira uma tag e pressione Enter"
-            (keydown.enter)="addEditTag()"
+            (keydown.enter)="addTag()"
           />
           <button
             type="button"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg"
-            (click)="addEditTag()"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
+            (click)="addTag()"
           >
             Adicionar Tag
           </button>
+          
+          <!-- Exibição das Tags Adicionadas -->
+          <div class="flex flex-wrap mt-2 gap-2">
+            <span
+              *ngFor="let t of newTask.tags"
+              class="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+            >
+              {{ t }}
+              <button
+                type="button"
+                class="ml-2 text-sm text-blue-500 hover:text-blue-700 focus:outline-none"
+                (click)="removeTag(t)"
+              >
+                &times;
+              </button>
+            </span>
+          </div>
         </div>
-        <!-- Exibição das Tags Adicionadas -->
-        <div class="flex flex-wrap mt-2 gap-2">
-          <span
-            *ngFor="let t of editingTask.tags"
-            class="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+        
+        <!-- Ações do Formulário -->
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            class="bg-gray-500 text-white px-4 py-2 rounded-lg"
+            (click)="closeAddModal()"
           >
-            {{ t }}
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal de Edição de Task -->
+    <div *ngIf="isEditModalOpen">
+      <h2 class="text-xl font-semibold mb-4">Editar Task</h2>
+      <form (ngSubmit)="saveEdit()">
+        <!-- Campos do Formulário para Editar Task -->
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Nome da Task</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="editingTask.title"
+            name="title"
+            required
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Descrição</label>
+          <textarea
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="editingTask.description"
+            name="description"
+            rows="3"
+          ></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Prioridade</label>
+          <select
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="editingTask.priority"
+            name="priority"
+            required
+          >
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
+          <input
+            type="text"
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="editingTask.assignee"
+            name="assignee"
+            required
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Data Limite</label>
+          <input
+            type="date"
+            class="w-full border border-gray-300 rounded-lg p-2"
+            [(ngModel)]="editingTask.dueDate"
+            name="dueDate"
+            required
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Tags</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="text"
+              class="flex-1 border border-gray-300 rounded-lg p-2"
+              [(ngModel)]="editTag"
+              name="editTag"
+              placeholder="Insira uma tag e pressione Enter"
+              (keydown.enter)="addEditTag()"
+            />
             <button
               type="button"
-              class="ml-2 text-sm text-blue-500 hover:text-blue-700 focus:outline-none"
-              (click)="removeEditTag(t)"
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+              (click)="addEditTag()"
             >
-              &times;
+              Adicionar Tag
             </button>
-          </span>
+          </div>
+          <!-- Exibição das Tags Adicionadas -->
+          <div class="flex flex-wrap mt-2 gap-2">
+            <span
+              *ngFor="let t of editingTask.tags"
+              class="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+            >
+              {{ t }}
+              <button
+                type="button"
+                class="ml-2 text-sm text-blue-500 hover:text-blue-700 focus:outline-none"
+                (click)="removeEditTag(t)"
+              >
+                &times;
+              </button>
+            </span>
+          </div>
         </div>
-      </div>
-      
-      <!-- Ações do Formulário -->
-      <div class="flex justify-end space-x-2">
-        <button
-          type="button"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg"
-          (click)="closeEditModal()"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        >
-          Salvar Alterações
-        </button>
-      </div>
-    </form>
+        
+        <!-- Ações do Formulário -->
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            class="bg-gray-500 text-white px-4 py-2 rounded-lg"
+            (click)="closeEditModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          >
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

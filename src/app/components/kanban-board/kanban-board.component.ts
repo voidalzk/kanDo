@@ -12,7 +12,8 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-kanban-board',
   standalone: true,
   imports: [CommonModule, DragDropModule, TaskCardComponent, FormsModule],
-  templateUrl: './kanban-board.component.html'
+  templateUrl: './kanban-board.component.html',
+  styleUrls: ['./kanban-board.component.css']
 })
 export class KanbanBoardComponent implements OnInit {
   todo: Task[] = [];
