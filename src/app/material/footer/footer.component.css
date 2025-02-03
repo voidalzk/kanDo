@@ -1,0 +1,28 @@
+.footer {
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    margin-top: auto;
+  }
+  
+  .footer-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+  
+  .footer-text {
+    font-size: 0.875rem;
+  }
+  
+  .footer-link {
+    color: var(--action-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+  
+  .footer-link:hover {
+    color: var(--action-primary-hover);
+  }

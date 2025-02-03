@@ -1,0 +1,47 @@
+.header {
+    position: sticky;
+    top: 0;
+    background-color: var(--surface);
+    box-shadow: var(--shadow-sm);
+    z-index: 50;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem;
+    padding: 0 1.5rem;
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  
+  .header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--action-primary);
+    transition: color var(--transition-fast);
+  }
+  
+  .header-title:hover {
+    color: var(--action-primary-hover);
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .header-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-base);
+  }
+  
+  .header-button:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+  }

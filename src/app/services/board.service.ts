@@ -1,6 +1,75 @@
 import { Injectable } from '@angular/core';
 import { Board } from '../models/board.model';
 
+const DEFAULT_BOARD_DATA = {
+  id: '1',
+  title: 'Meu Primeiro Board',
+  description: 'Board padrão do sistema',
+  tasks: {
+    todo: [
+      {
+        id: "1738095633334",
+        title: "Estilização e Dark Mode Completos",
+        description: "Criar o dark mode e estilizar o website para que aparente modernidade",
+        priority: "medium",
+        status: "todo",
+        createdAt: "2025-01-28T20:20:33.334Z",
+        dueDate: "2025-02-04T00:00:00.000Z",
+        assignee: "Eu",
+        tags: ["front-end", "design"]
+      },
+      {
+        id: "1738095721624",
+        title: "Pagina de Boards",
+        description: "Pagina Principal com os seus Boards e a opção de criar mais boards",
+        priority: "medium",
+        status: "todo",
+        createdAt: "2025-01-28T20:22:01.624Z",
+        dueDate: "2025-02-05T00:00:00.000Z",
+        assignee: "Eu",
+        tags: ["front-end", "design"]
+      },
+      {
+        id: "1738105867175",
+        title: "Implementar Login e Autentificação",
+        description: "Tela Inicial, com opções de login e registro, guards para login, e assoçiação de boards e tasks por ID, LocalStorage por enquanto.",
+        priority: "high",
+        status: "todo",
+        createdAt: "2025-01-28T23:11:07.175Z",
+        dueDate: "2025-02-05T00:00:00.000Z",
+        assignee: "Eu",
+        tags: ["front-end"]
+      }
+    ],
+    inProgress: [
+      {
+        id: "2",
+        title: "Design dashboard",
+        description: "Create mockups for the user dashboard",
+        priority: "medium",
+        status: "inProgress",
+        createdAt: "2025-01-28T19:15:43.428Z",
+        dueDate: "2024-05-10T03:00:00.000Z",
+        assignee: "Alice Johnson",
+        tags: ["design"]
+      }
+    ],
+    done: [
+      {
+        id: "4",
+        title: "Project setup",
+        description: "Initialize Angular project with required dependencies",
+        priority: "low",
+        status: "done",
+        createdAt: "2025-01-28T19:15:43.428Z",
+        dueDate: "2024-03-20T03:00:00.000Z",
+        assignee: "Jane Smith",
+        tags: ["setup"]
+      }
+    ]
+  }
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +79,7 @@ export class BoardService {
 
   constructor() {
     this.migrateOldTasks();
-    this.initializeDefaultBoard();
+    this.initializeStorage();
   }
 
   private migrateOldTasks(): void {
@@ -30,20 +99,11 @@ export class BoardService {
     }
   }
 
-  private initializeDefaultBoard(): void {
-    const boards = this.getBoards();
-    if (boards.length === 0) {
-      const defaultBoard: Board = {
-        id: '1',
-        title: 'Meu Primeiro Board',
-        description: 'Board padrão do sistema',
-        tasks: {
-          todo: [],
-          inProgress: [],
-          done: []
-        }
-      };
-      this.saveBoard(defaultBoard);
+  private initializeStorage(): void {
+    const existingBoards = localStorage.getItem(this.STORAGE_KEY);
+    
+    if (!existingBoards) {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify([DEFAULT_BOARD_DATA]));
     }
   }
 

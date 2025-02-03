@@ -1,0 +1,156 @@
+.task-card {
+    background-color: var(--surface);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-200);
+  }
+  
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  
+  .task-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  
+  .priority-badge {
+    padding: 0.35rem 0.85rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  
+  .priority-low {
+    background-color: rgb(220, 252, 231);
+    color: rgb(22, 163, 74);
+    border: 1px solid rgb(187, 247, 208);
+  }
+  
+  .priority-low:hover {
+    background-color: rgb(187, 247, 208);
+  }
+  
+  .priority-medium {
+    background-color: rgb(254, 249, 195);
+    color: rgb(202, 138, 4);
+    border: 1px solid rgb(254, 240, 138);
+  }
+  
+  .priority-medium:hover {
+    background-color: rgb(254, 240, 138);
+  }
+  
+  .priority-high {
+    background-color: rgb(254, 226, 226);
+    color: rgb(220, 38, 38);
+    border: 1px solid rgb(254, 202, 202);
+  }
+  
+  .priority-high:hover {
+    background-color: rgb(254, 202, 202);
+  }
+  
+  .task-description {
+    color: var(--text-secondary);
+    font-size: 0.925rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    min-height: 26px;
+  }
+  
+  .tag-badge {
+    padding: 0.35rem 0.85rem;
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+    border: 1px solid var(--primary-200);
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  
+  .tag-badge:hover {
+    background-color: var(--primary-100);
+    transform: translateY(-1px);
+  }
+  
+  .task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .assignee {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .due-date {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.825rem;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .task-card {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  .task-card.cdk-drag-preview {
+    box-shadow: var(--shadow-lg);
+    opacity: 0.9;
+  }
