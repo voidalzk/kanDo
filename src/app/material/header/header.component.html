@@ -1,8 +1,11 @@
 <header class="sticky top-0 bg-white shadow-sm z-50">
   <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
-    <h1 class="text-2xl font-bold text-blue-700 hover:text-blue-700 transition-colors">
-      KanDo
-    </h1>
+    <h1 
+    (click)="goToHome()" 
+    class="text-2xl font-bold text-blue-700 hover:text-blue-700 transition-colors cursor-pointer"
+  >
+    KanDo
+  </h1>
     
     <div class="flex gap-4 items-center">
       <ng-container *ngIf="isAuthenticated">

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 
@@ -15,17 +15,26 @@ export class TaskCardComponent {
 
   isMenuOpen: boolean = false;
 
+  constructor(private elementRef: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isMenuOpen = false;
+    }
+  }
+
   getPriorityClass(): string {
-    const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full ';
+    const baseClasses = 'px-3 py-1 text-xs font-medium rounded-full';
     switch (this.task.priority) {
-      case 'high':
-        return baseClasses + 'bg-red-100 text-red-800';
-      case 'medium':
-        return baseClasses + 'bg-yellow-100 text-yellow-800';
       case 'low':
-        return baseClasses + 'bg-green-100 text-green-800';
+        return `${baseClasses} bg-green-50 text-green-700 border border-green-200`;
+      case 'medium':
+        return `${baseClasses} bg-yellow-50 text-yellow-700 border border-yellow-200`;
+      case 'high':
+        return `${baseClasses} bg-red-50 text-red-700 border border-red-200`;
       default:
-        return baseClasses + 'bg-gray-100 text-gray-800';
+        return `${baseClasses} bg-gray-50 text-gray-700 border border-gray-200`;
     }
   }
 
@@ -52,7 +61,8 @@ export class TaskCardComponent {
     this.isMenuOpen = false;
   }
 
-  toggleMenu(): void {
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
     this.isMenuOpen = !this.isMenuOpen;
   }
 
