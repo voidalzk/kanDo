@@ -42,34 +42,6 @@ KanDo é uma aplicação de gerenciamento de tarefas baseada no sistema Kanban, 
   - Angular Router
   - Reactive Forms
 
-## 📦 Instalação
-
-### Clone o repositório
-
-git clone https://github.com/seu-usuario/kando.git
-
-### Entre no diretório
-
-cd kando
-
-### Instale as dependências
-
-npm install
-
-### Inicie o servidor de desenvolvimento
-
-ng serve
-
-## 🧪 Testes
-
-### Execute os testes unitários
-
-ng test
-
-### Execute os testes end-to-end
-
-ng e2e
-
 ## 📱 Layout Responsivo
 
 - Desktop: Layout completo com todas as funcionalidades
