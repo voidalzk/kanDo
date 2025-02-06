@@ -5,11 +5,12 @@ import { LoginComponent } from './components/user/login/login.component';
 import { RegisterComponent } from './components/user/register/register.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomeComponent } from './components/user/home/home.component';
+import { NoAuthGuard } from './guards/noAuth.guard';
 
 export const routes: Routes = [
   { path: 'myboards', component: MyBoardsComponent, canActivate: [AuthGuard] },
   { path: 'board/:id', component: KanbanBoardComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'home', component: HomeComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
