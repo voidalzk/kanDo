@@ -7,18 +7,62 @@ import { TaskCardComponent } from '../task-card/task-card.component';
 import { TaskService } from '../../services/task.service';
 import { BoardService } from '../../services/board.service';
 import { ActivatedRoute } from '@angular/router';
+import { trigger, transition, style, animate, state } from '@angular/animations';
+
 
 @Component({
   selector: 'app-kanban-board',
   standalone: true,
   imports: [CommonModule, DragDropModule, TaskCardComponent, FormsModule],
   templateUrl: './kanban-board.component.html',
-  styleUrls: ['./kanban-board.component.css']
+  styleUrls: ['./kanban-board.component.css'],
+  animations: [
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ transform: 'translateY(-10%)', opacity: 0 }),
+        animate('50ms ease-out', style({ transform: 'translateY(0)', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ transform: 'translateY(-10%)', opacity: 0 }))
+      ])
+    ]),
+    trigger('columnExpand', [
+      state('expanded', style({
+        height: '*',
+        opacity: 1
+      })),
+      state('collapsed', style({
+        height: '90px',
+        opacity: 0.8
+      })),
+      transition('expanded <=> collapsed', [
+        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ])
+    ]),
+    trigger('contentFade', [
+      state('expanded', style({ opacity: 1 })),
+      state('collapsed', style({ opacity: 0 })),
+      transition('expanded <=> collapsed', [
+        animate('200ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ])
+    ])
+  ]
 })
 export class KanbanBoardComponent implements OnInit {
   todo: Task[] = [];
   inProgress: Task[] = [];
   done: Task[] = [];
+
+  columnStates = {
+    todo: 'expanded',
+    inProgress: 'expanded',
+    done: 'expanded'
+  };
+
+  toggleColumn(column: 'todo' | 'inProgress' | 'done') {
+    this.columnStates[column] = 
+      this.columnStates[column] === 'expanded' ? 'collapsed' : 'expanded';
+  }
 
   // Controle dos Modais
   isAddModalOpen: boolean = false;
@@ -111,6 +155,7 @@ export class KanbanBoardComponent implements OnInit {
     this.done = this.done.filter(t => t.id !== task.id);
     this.saveTasks();
   }
+
 
   // Função para abrir o modal de adição
   openAddModal() {

@@ -6,31 +6,47 @@
     <div class="grid grid-cols-3 gap-4 md:gap-6">
       
       <!-- To Do Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]"
+           [@columnExpand]="columnStates.todo">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
-          <button
-            class="text-green-500 hover:text-green-700 focus:outline-none p-2"
-            (click)="openAddModal()"
-          >
-            <span class="material-icons">add</span>
-          </button>
+          <div class="flex items-center space-x-2">
+            <button
+              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
+              (click)="openAddModal()"
+              title="Add new task">
+              <span class="material-icons text-green-500">add</span>
+            </button>
+            <button
+              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
+              (click)="toggleColumn('todo')"
+              title="Toggle column">
+              <span class="material-icons"
+                    [class.rotate-180]="columnStates.todo === 'collapsed'">
+                expand_less
+              </span>
+            </button>
+          </div>
         </div>
-        <div
-          cdkDropList
-          id="todoList"
-          [cdkDropListData]="todo"
-          [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
-          class="min-h-[200px] space-y-3"
-          (cdkDropListDropped)="drop($event)"
-        >
-          <app-task-card
-            *ngFor="let task of todo"
-            [task]="task"
-            (delete)="deleteTask($event)"
-            (edit)="editTask($event)"
-            cdkDrag
-          ></app-task-card>
+        <div [@contentFade]="columnStates.todo"
+             *ngIf="columnStates.todo === 'expanded'">
+          <div
+            cdkDropList
+            id="todoList"
+            [cdkDropListData]="todo"
+            [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+            class="min-h-[200px] space-y-3 transition-all duration-300"
+            (cdkDropListDropped)="drop($event)"
+            [@slideInOut]
+          >
+            <app-task-card
+              *ngFor="let task of todo"
+              [task]="task"
+              (delete)="deleteTask($event)"
+              (edit)="editTask($event)"
+              cdkDrag
+            ></app-task-card>
+          </div>
         </div>
       </div>
       
