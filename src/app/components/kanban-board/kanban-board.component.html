@@ -6,8 +6,8 @@
     <div class="grid grid-cols-3 gap-4 md:gap-6">
       
       <!-- To Do Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]"
-           [@columnExpand]="columnStates.todo">
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit"
+      [@columnExpand]="columnStates.todo">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
           <div class="flex items-center space-x-2">
@@ -28,69 +28,99 @@
             </button>
           </div>
         </div>
-        <div [@contentFade]="columnStates.todo"
-             *ngIf="columnStates.todo === 'expanded'">
-          <div
-            cdkDropList
-            id="todoList"
-            [cdkDropListData]="todo"
-            [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
-            class="min-h-[200px] space-y-3 transition-all duration-300"
-            (cdkDropListDropped)="drop($event)"
-            [@slideInOut]
-          >
-            <app-task-card
-              *ngFor="let task of todo"
-              [task]="task"
-              (delete)="deleteTask($event)"
-              (edit)="editTask($event)"
-              cdkDrag
-            ></app-task-card>
-          </div>
-        </div>
-      </div>
+        <div class="transition-all duration-300 overflow-hidden"
+        *ngIf="columnStates.todo === 'expanded'">
+     <div class="task-list space-y-3"
+          #todoTaskList
+          cdkDropList
+          id="todoList"
+          [cdkDropListData]="todo"
+          [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+          (cdkDropListDropped)="drop($event)">
+       <app-task-card
+         *ngFor="let task of todo"
+         [task]="task"
+         (delete)="deleteTask($event)"
+         (edit)="editTask($event)"
+         cdkDrag>
+       </app-task-card>
+     </div>
+   </div>
+ </div>
       
       <!-- In Progress Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit overflow-hidden"
+      [@columnExpand]="columnStates.inProgress">
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold mb-4 text-gray-700">In Progress</h2>
-        <div
+        <div class="flex items-center space-x-2">
+          <button
+            class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
+            (click)="toggleColumn('inProgress')"
+            title="Toggle column">
+            <span class="material-icons"
+                  [class.rotate-180]="columnStates.inProgress === 'collapsed'">
+              expand_less
+            </span>
+          </button>
+        </div>
+      </div>
+        <div class="transition-all duration-300 overflow-y-hidden"
+        *ngIf="columnStates.inProgress === 'expanded'">
+     <div class="task-list space-y-3 overflow-y-visible"
+          #inProgressTaskList
           cdkDropList
           id="inProgressList"
           [cdkDropListData]="inProgress"
           [cdkDropListConnectedTo]="['todoList', 'doneList']"
-          class="min-h-[200px] space-y-3"
-          (cdkDropListDropped)="drop($event)"
-        >
-          <app-task-card
-            *ngFor="let task of inProgress"
-            [task]="task"
-            (delete)="deleteTask($event)"
-            (edit)="editTask($event)"
-            cdkDrag
-          ></app-task-card>
-        </div>
-      </div>
+          (cdkDropListDropped)="drop($event)">
+       <app-task-card
+         *ngFor="let task of inProgress"
+         [task]="task"
+         (delete)="deleteTask($event)"
+         (edit)="editTask($event)"
+         cdkDrag>
+       </app-task-card>
+     </div>
+   </div>
+ </div>
       
       <!-- Done Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px]">
+      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit"
+      [@columnExpand]="columnStates.done">
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold mb-4 text-gray-700">Done</h2>
-        <div
+        <div class="flex items-center space-x-2">
+          <button
+            class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
+            (click)="toggleColumn('done')"
+            title="Toggle column">
+            <span class="material-icons"
+                  [class.rotate-180]="columnStates.done === 'collapsed'">
+              expand_less
+            </span>
+          </button>
+        </div>
+      </div>
+        <div class="transition-all duration-300 overflow-hidden"
+        *ngIf="columnStates.done === 'expanded'">
+     <div class="task-list space-y-3"
+          #doneTaskList
           cdkDropList
           id="doneList"
           [cdkDropListData]="done"
           [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
-          class="min-h-[200px] space-y-3"
-          (cdkDropListDropped)="drop($event)"
-        >
-          <app-task-card
-            *ngFor="let task of done"
-            [task]="task"
-            (delete)="deleteTask($event)"
-            (edit)="editTask($event)"
-            cdkDrag
-          ></app-task-card>
-        </div>
-      </div>
+          (cdkDropListDropped)="drop($event)">
+       <app-task-card
+         *ngFor="let task of done"
+         [task]="task"
+         (delete)="deleteTask($event)"
+         (edit)="editTask($event)"
+         cdkDrag>
+       </app-task-card>
+     </div>
+   </div>
+ </div>
       
     </div>
   </div>

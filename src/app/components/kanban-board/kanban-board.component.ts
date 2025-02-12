@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -8,6 +8,7 @@ import { TaskService } from '../../services/task.service';
 import { BoardService } from '../../services/board.service';
 import { ActivatedRoute } from '@angular/router';
 import { trigger, transition, style, animate, state } from '@angular/animations';
+
 
 
 @Component({
@@ -28,7 +29,7 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
     ]),
     trigger('columnExpand', [
       state('expanded', style({
-        height: '*',
+        height: '*',  // This will make it adapt to content
         opacity: 1
       })),
       state('collapsed', style({
@@ -62,6 +63,36 @@ export class KanbanBoardComponent implements OnInit {
   toggleColumn(column: 'todo' | 'inProgress' | 'done') {
     this.columnStates[column] = 
       this.columnStates[column] === 'expanded' ? 'collapsed' : 'expanded';
+  }
+
+  private readonly HEADER_HEIGHT = 90;
+  private readonly MIN_HEIGHT = 90;
+  private readonly PADDING = 16;
+
+  @ViewChildren('taskList') taskLists!: QueryList<ElementRef>;
+  @ViewChildren('columnContent') columnContents!: QueryList<ElementRef>;
+
+  getColumnHeight(column: 'todo' | 'inProgress' | 'done'): number {
+    const columnElement = this.columnContents?.find((el, index) => {
+      switch (index) {
+        case 0: return column === 'todo';
+        case 1: return column === 'inProgress';
+        case 2: return column === 'done';
+        default: return false;
+      }
+    });
+
+    if (!columnElement || this.columnStates[column] === 'collapsed') {
+      return this.MIN_HEIGHT;
+    }
+
+    const taskList = columnElement.nativeElement.querySelector('.task-list');
+    if (!taskList) {
+      return this.MIN_HEIGHT;
+    }
+
+    const taskListHeight = taskList.scrollHeight;
+    return this.HEADER_HEIGHT + taskListHeight + this.PADDING;
   }
 
   // Controle dos Modais
