@@ -1,13 +1,13 @@
 <header class="sticky top-0 bg-white shadow-sm z-50">
   <div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
     <h1 
-    (click)="goToHome()" 
-    class="text-2xl font-bold text-blue-700 hover:text-blue-700 transition-colors cursor-pointer"
-  >
-    KanDo
-  </h1>
+      (click)="goToHome()" 
+      class="text-2xl font-bold text-blue-700 hover:text-blue-700 transition-colors cursor-pointer"
+    >
+      KanDo
+    </h1>
     
-    <div class="flex gap-4 items-center">
+    <div class="hidden md:flex gap-4 items-center">
       <ng-container *ngIf="isAuthenticated">
         <span class="text-gray-700">{{ currentUserName }}</span>
         <button 
@@ -16,6 +16,9 @@
         >
           My Boards
         </button>
+
+        <app-notifications></app-notifications>
+
         <button 
           (click)="goToProfile()" 
           class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
@@ -29,8 +32,6 @@
           Settings
         </button>
         
-        <app-notifications></app-notifications>
-        
         <button
           (click)="logout()" 
           class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
@@ -38,15 +39,56 @@
           Logout
         </button>
       </ng-container>
-      
-      <ng-container *ngIf="!isAuthenticated">
-        <button 
-          (click)="login()" 
-          class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
-        >
-          Login
+    </div>
+
+    <!-- Hamburger Menu for Mobile -->
+    <div class="flex items-center md:hidden">
+      <app-notifications></app-notifications>
+      <button class="p-2 rounded-lg focus:outline-none relative mt-1.5" (click)="toggleSidebar()">
+        <span class="material-icons">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sidebar Menu for Mobile -->
+  <div *ngIf="isSidebarOpen" class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50">
+    <div class="fixed inset-y-0 right-0 w-64 bg-white shadow-lg z-50">
+      <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="text-xl font-bold text-blue-700">Menu</h2>
+        <button class="p-2 rounded-lg focus:outline-none" (click)="toggleSidebar()">
+          <span class="material-icons">close</span>
         </button>
-      </ng-container>
+      </div>
+      <div class="p-4">
+        <ng-container *ngIf="isAuthenticated">
+          <span class="block text-gray-700 mb-4">{{ currentUserName }}</span>
+          <button 
+            (click)="goToBoards(); toggleSidebar()" 
+            class="block w-full text-left px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+          >
+            My Boards
+          </button>
+          <button 
+            (click)="goToProfile(); toggleSidebar()" 
+            class="block w-full text-left px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+          >
+            Profile
+          </button>
+          <button 
+            (click)="goToSettings(); toggleSidebar()" 
+            class="block w-full text-left px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+          >
+            Settings
+          </button>
+          
+          <button
+            (click)="logout(); toggleSidebar()" 
+            class="block w-full text-left px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+          >
+            Logout
+          </button>
+        </ng-container>
+      </div>
     </div>
   </div>
 </header>

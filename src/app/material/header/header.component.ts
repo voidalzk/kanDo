@@ -16,6 +16,8 @@ import { NotificationsComponent } from '../../components/notifications/notificat
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+  isSidebarOpen = false;
+
   constructor(
     private router: Router,
     private authService: AuthService
@@ -56,5 +58,9 @@ export class HeaderComponent {
 
   goToSignup(): void {
     this.router.navigate(['/signup']);
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
 }
