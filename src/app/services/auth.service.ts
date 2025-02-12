@@ -9,6 +9,8 @@ export class AuthService {
   private readonly USERS_KEY = 'users';
   private readonly CURRENT_USER_KEY = 'currentUser';
 
+  
+
   constructor(private router: Router) {}
 
   register(user: Omit<User, 'id'>): boolean {

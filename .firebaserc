@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "kando-74fa1": {
+      "hosting": {
+        "angular-kanban": [
+          "kando-74fa1"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "kando-74fa1"
+  }
+}

@@ -1,0 +1,70 @@
+<div class="relative">
+    <!-- Notification Bell Icon -->
+    <button 
+      class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200 relative"
+      (click)="toggleNotifications()"
+      #notificationButton>
+      <span class="material-icons text-gray-600">notifications</span>
+      <!-- Notification Badge -->
+      <span *ngIf="unreadCount > 0"
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        {{unreadCount}}
+      </span>
+    </button>
+  
+    <!-- Notifications Panel -->
+    <div *ngIf="isOpen" 
+         class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-100 z-50 animate-fadeIn"
+         #notificationPanel>
+      <div class="p-4 border-b border-gray-100">
+        <div class="flex justify-between items-center">
+          <h3 class="font-semibold text-gray-700">Notifications</h3>
+          <button *ngIf="notifications.length > 0"
+                  class="text-sm text-blue-600 hover:text-blue-700"
+                  (click)="markAllAsRead()">
+            Mark all as read
+          </button>
+        </div>
+      </div>
+  
+      <!-- Notifications List -->
+      <div class="max-h-96 overflow-y-auto">
+        <div *ngIf="notifications.length === 0" 
+             class="p-4 text-center text-gray-500">
+          No notifications
+        </div>
+  
+        <div *ngFor="let notification of notifications"
+             class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
+             [class.bg-blue-50]="!notification.read">
+          <div class="flex items-start gap-3">
+            <span class="material-icons text-blue-600">
+              {{notification.type === 'invite' ? 'group_add' : 'notifications'}}
+            </span>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700">
+                <span class="font-medium">{{notification.fromUser}}</span>
+                invited you to collaborate on
+                <span class="font-medium">{{notification.boardName}}</span>
+              </p>
+              <div class="mt-2 flex gap-2">
+                <button 
+                  class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  (click)="acceptInvite(notification)">
+                  Accept
+                </button>
+                <button 
+                  class="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200"
+                  (click)="declineInvite(notification)">
+                  Decline
+                </button>
+              </div>
+              <span class="text-xs text-gray-500 mt-2 block">
+                {{notification.createdAt | timeAgo}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
+  "cli": {
+    "cache": {
+      "enabled": false
+    }
+  },
   "newProjectRoot": "projects",
   "projects": {
     "angular-kanban": {
@@ -83,6 +88,23 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "angular-kanban:build:production",
+              "serveTarget": "angular-kanban:serve:production"
+            },
+            "development": {
+              "buildTarget": "angular-kanban:build:development",
+              "serveTarget": "angular-kanban:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

@@ -39,4 +39,20 @@ export class HeaderComponent {
   goToHome(): void {
     this.router.navigate(['/']);
   }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/settings']);
+  }
+
+  goToSignup(): void {
+    this.router.navigate(['/signup']);
+  }
+
+  Notifications(): void {
+    this.router.navigate(['/notifications']);
+  }
 }

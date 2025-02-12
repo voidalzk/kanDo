@@ -17,6 +17,24 @@
           My Boards
         </button>
         <button 
+          (click)="goToProfile()" 
+          class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
+        >
+          Profile
+        </button>
+        <button 
+          (click)="goToSettings()" 
+          class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
+        >
+          Settings
+        </button>
+        <button 
+          (click)="Notifications()" 
+          class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
+        >
+          Notifications
+        </button>
+        <button
           (click)="logout()" 
           class="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all hover:-translate-y-0.5"
         >
