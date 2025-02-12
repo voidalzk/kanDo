@@ -12,7 +12,7 @@ node_modules
 dist
 dist-ssr
 *.local
-/src/environments/environment.ts
+/src/app/environments/environment.ts
 
 # Editor directories and files
 .vscode/*
