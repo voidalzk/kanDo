@@ -2,12 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationsComponent } from '../../components/notifications/notifications.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './header.component.html'
+  imports: [
+    CommonModule,
+    RouterModule,
+    NotificationsComponent
+  ],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   constructor(
@@ -50,9 +56,5 @@ export class HeaderComponent {
 
   goToSignup(): void {
     this.router.navigate(['/signup']);
-  }
-
-  Notifications(): void {
-    this.router.navigate(['/notifications']);
   }
 }
