@@ -2,6 +2,8 @@
 
 ## 📋 Sobre
 
+Acessar: https://kando-74fa1.web.app/home
+
 KanDo é uma aplicação de gerenciamento de tarefas baseada no sistema Kanban, desenvolvida com Angular 17. A aplicação oferece uma interface intuitiva e moderna para organização de projetos e tarefas, com recursos de drag-and-drop e gerenciamento de múltiplos boards.
 
 ## 🚀 Funcionalidades
