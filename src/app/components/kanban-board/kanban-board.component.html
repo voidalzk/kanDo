@@ -1,127 +1,283 @@
 <!-- Container with horizontal scroll -->
 <div class="overflow-x-auto">
   <!-- Kanban Board Layout -->
-  <div class="min-w-[768px] p-4"> <!-- Minimum width to prevent squishing -->
+  <div class="min-w-[768px] p-4">
+    <!-- Minimum width to prevent squishing -->
+    <!-- Global Column Controls -->
+    <div class="flex justify-end mb-3 gap-2">
+      <button
+        class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm flex items-center gap-1 transition-all duration-200"
+        (click)="toggleAllColumns(true)"
+      >
+        <span class="material-icons text-sm">unfold_more</span>
+        Expandir Tudo
+      </button>
+      <button
+        class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm flex items-center gap-1 transition-all duration-200"
+        (click)="toggleAllColumns(false)"
+      >
+        <span class="material-icons text-sm">unfold_less</span>
+        Minimizar Tudo
+      </button>
+    </div>
+
     <!-- Columns Grid -->
-    <div class="grid grid-cols-3 gap-4 md:gap-6">
-      
+    <div class="grid grid-cols-3 gap-4 md:gap-6" style="align-items: start">
       <!-- To Do Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit"
-      [@columnExpand]="columnStates.todo">
+      <div
+        class="bg-white rounded-lg shadow p-4 min-w-[280px] relative transition-all duration-300"
+        [@columnExpand]="columnStates['todo']"
+      >
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold text-gray-700">To Do</h2>
+            <span
+              class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+            >
+              {{ getTaskCount("todo") }}
+            </span>
+          </div>
           <div class="flex items-center space-x-2">
             <button
-              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
-              (click)="openAddModal()"
-              title="Add new task">
-              <span class="material-icons text-green-500">add</span>
-            </button>
-            <button
-              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
+              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200 flex items-center justify-center"
               (click)="toggleColumn('todo')"
-              title="Toggle column">
-              <span class="material-icons"
-                    [class.rotate-180]="columnStates.todo === 'collapsed'">
-                expand_less
+              [attr.aria-label]="
+                columnStates['todo'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+              [attr.title]="
+                columnStates['todo'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+            >
+              <span class="material-icons">
+                {{
+                  columnStates["todo"] === "expanded"
+                    ? "expand_less"
+                    : "expand_more"
+                }}
               </span>
             </button>
           </div>
         </div>
-        <div class="transition-all duration-300 overflow-hidden"
-        *ngIf="columnStates.todo === 'expanded'">
-     <div class="task-list space-y-3"
-          #todoTaskList
+
+        <!-- Collapsed state indicator -->
+        <div
+          *ngIf="columnStates['todo'] === 'collapsed'"
+          class="absolute inset-x-0 bottom-0 p-2 bg-gray-50 text-center text-sm text-gray-500 rounded-b-lg border-t"
+        >
+          {{ getTaskCount("todo") }}
+          {{ getTaskCount("todo") === 1 ? "tarefa" : "tarefas" }} na coluna
+        </div>
+
+        <div
+          class="transition-all duration-300 overflow-hidden"
+          *ngIf="columnStates['todo'] === 'expanded'"
+        >
+          <div
+            class="task-list space-y-3"
+            #todoTaskList
+            cdkDropList
+            id="todoList"
+            [cdkDropListData]="todo"
+            [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <app-task-card
+              *ngFor="let task of todo"
+              [task]="task"
+              (delete)="deleteTask($event)"
+              (edit)="editTask($event)"
+              cdkDrag
+            >
+            </app-task-card>
+          </div>
+        </div>
+
+        <!-- Área de drop quando minimizada -->
+        <div
+          *ngIf="columnStates['todo'] === 'collapsed'"
+          class="min-h-[40px]"
           cdkDropList
           id="todoList"
           [cdkDropListData]="todo"
           [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
-          (cdkDropListDropped)="drop($event)">
-       <app-task-card
-         *ngFor="let task of todo"
-         [task]="task"
-         (delete)="deleteTask($event)"
-         (edit)="editTask($event)"
-         cdkDrag>
-       </app-task-card>
-     </div>
-   </div>
- </div>
-      
-      <!-- In Progress Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit overflow-hidden"
-      [@columnExpand]="columnStates.inProgress">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold mb-4 text-gray-700">In Progress</h2>
-        <div class="flex items-center space-x-2">
-          <button
-            class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
-            (click)="toggleColumn('inProgress')"
-            title="Toggle column">
-            <span class="material-icons"
-                  [class.rotate-180]="columnStates.inProgress === 'collapsed'">
-              expand_less
-            </span>
-          </button>
-        </div>
+          (cdkDropListDropped)="drop($event)"
+        ></div>
       </div>
-        <div class="transition-all duration-300 overflow-y-hidden"
-        *ngIf="columnStates.inProgress === 'expanded'">
-     <div class="task-list space-y-3 overflow-y-visible"
-          #inProgressTaskList
+
+      <!-- In Progress Column -->
+      <div
+        class="bg-white rounded-lg shadow p-4 min-w-[280px] relative transition-all duration-300"
+        [@columnExpand]="columnStates['inProgress']"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold text-gray-700">In Progress</h2>
+            <span
+              class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+            >
+              {{ getTaskCount("inProgress") }}
+            </span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200 flex items-center justify-center"
+              (click)="toggleColumn('inProgress')"
+              [attr.aria-label]="
+                columnStates['inProgress'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+              [attr.title]="
+                columnStates['inProgress'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+            >
+              <span class="material-icons">
+                {{
+                  columnStates["inProgress"] === "expanded"
+                    ? "expand_less"
+                    : "expand_more"
+                }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsed state indicator -->
+        <div
+          *ngIf="columnStates['inProgress'] === 'collapsed'"
+          class="absolute inset-x-0 bottom-0 p-2 bg-gray-50 text-center text-sm text-gray-500 rounded-b-lg border-t"
+        >
+          {{ getTaskCount("inProgress") }}
+          {{ getTaskCount("inProgress") === 1 ? "tarefa" : "tarefas" }} na
+          coluna
+        </div>
+
+        <div
+          class="transition-all duration-300 overflow-hidden"
+          *ngIf="columnStates['inProgress'] === 'expanded'"
+        >
+          <div
+            class="task-list space-y-3"
+            #inProgressTaskList
+            cdkDropList
+            id="inProgressList"
+            [cdkDropListData]="inProgress"
+            [cdkDropListConnectedTo]="['todoList', 'doneList']"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <app-task-card
+              *ngFor="let task of inProgress"
+              [task]="task"
+              (delete)="deleteTask($event)"
+              (edit)="editTask($event)"
+              cdkDrag
+            >
+            </app-task-card>
+          </div>
+        </div>
+
+        <!-- Área de drop quando minimizada -->
+        <div
+          *ngIf="columnStates['inProgress'] === 'collapsed'"
+          class="min-h-[40px]"
           cdkDropList
           id="inProgressList"
           [cdkDropListData]="inProgress"
           [cdkDropListConnectedTo]="['todoList', 'doneList']"
-          (cdkDropListDropped)="drop($event)">
-       <app-task-card
-         *ngFor="let task of inProgress"
-         [task]="task"
-         (delete)="deleteTask($event)"
-         (edit)="editTask($event)"
-         cdkDrag>
-       </app-task-card>
-     </div>
-   </div>
- </div>
-      
-      <!-- Done Column -->
-      <div class="bg-white rounded-lg shadow p-4 min-w-[280px] h-fit"
-      [@columnExpand]="columnStates.done">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold mb-4 text-gray-700">Done</h2>
-        <div class="flex items-center space-x-2">
-          <button
-            class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200"
-            (click)="toggleColumn('done')"
-            title="Toggle column">
-            <span class="material-icons"
-                  [class.rotate-180]="columnStates.done === 'collapsed'">
-              expand_less
-            </span>
-          </button>
-        </div>
+          (cdkDropListDropped)="drop($event)"
+        ></div>
       </div>
-        <div class="transition-all duration-300 overflow-hidden"
-        *ngIf="columnStates.done === 'expanded'">
-     <div class="task-list space-y-3"
-          #doneTaskList
+
+      <!-- Done Column -->
+      <div
+        class="bg-white rounded-lg shadow p-4 min-w-[280px] relative transition-all duration-300"
+        [@columnExpand]="columnStates['done']"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold text-gray-700">Done</h2>
+            <span
+              class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+            >
+              {{ getTaskCount("done") }}
+            </span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              class="p-2 rounded-full hover:bg-gray-100 transition-all duration-200 flex items-center justify-center"
+              (click)="toggleColumn('done')"
+              [attr.aria-label]="
+                columnStates['done'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+              [attr.title]="
+                columnStates['done'] === 'expanded'
+                  ? 'Minimizar coluna'
+                  : 'Expandir coluna'
+              "
+            >
+              <span class="material-icons">
+                {{
+                  columnStates["done"] === "expanded"
+                    ? "expand_less"
+                    : "expand_more"
+                }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsed state indicator -->
+        <div
+          *ngIf="columnStates['done'] === 'collapsed'"
+          class="absolute inset-x-0 bottom-0 p-2 bg-gray-50 text-center text-sm text-gray-500 rounded-b-lg border-t"
+        >
+          {{ getTaskCount("done") }}
+          {{ getTaskCount("done") === 1 ? "tarefa" : "tarefas" }} na coluna
+        </div>
+
+        <div
+          class="transition-all duration-300 overflow-hidden"
+          *ngIf="columnStates['done'] === 'expanded'"
+        >
+          <div
+            class="task-list space-y-3"
+            #doneTaskList
+            cdkDropList
+            id="doneList"
+            [cdkDropListData]="done"
+            [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
+            (cdkDropListDropped)="drop($event)"
+          >
+            <app-task-card
+              *ngFor="let task of done"
+              [task]="task"
+              (delete)="deleteTask($event)"
+              (edit)="editTask($event)"
+              cdkDrag
+            >
+            </app-task-card>
+          </div>
+        </div>
+
+        <!-- Área de drop quando minimizada -->
+        <div
+          *ngIf="columnStates['done'] === 'collapsed'"
+          class="min-h-[40px]"
           cdkDropList
           id="doneList"
           [cdkDropListData]="done"
           [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
-          (cdkDropListDropped)="drop($event)">
-       <app-task-card
-         *ngFor="let task of done"
-         [task]="task"
-         (delete)="deleteTask($event)"
-         (edit)="editTask($event)"
-         cdkDrag>
-       </app-task-card>
-     </div>
-   </div>
- </div>
-      
+          (cdkDropListDropped)="drop($event)"
+        ></div>
+      </div>
     </div>
   </div>
 </div>
@@ -131,7 +287,9 @@
   class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
   *ngIf="isAddModalOpen || isEditModalOpen"
 >
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-4 md:p-6">
+  <div
+    class="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-4 md:p-6"
+  >
     <!-- Modal de Adição de Task -->
     <div *ngIf="isAddModalOpen">
       <h2 class="text-xl font-semibold mb-4">Adicionar Nova Task</h2>
@@ -147,7 +305,7 @@
             required
           />
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Descrição</label>
           <textarea
@@ -157,7 +315,7 @@
             rows="3"
           ></textarea>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Prioridade</label>
           <select
@@ -171,7 +329,7 @@
             <option value="high">Alta</option>
           </select>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
           <input
@@ -182,26 +340,26 @@
             required
           />
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-1">Insíra as Tags</label>
           <div class="flex flex-col gap-1">
-          <input
-            type="text"
-            class="flex-1 min-w[300px] border border-gray-400 rounded-lg p-2 mt-2"
-            [(ngModel)]="tag"
-            name="tag"
-            placeholder="Insira uma tag e pressione Enter"
-            (keydown.enter)="addTag()"
-          />
-          <button
-            type="button"
-            class="bg-blue-500 text-white px-2 py-2 rounded-lg mt-2"
-            (click)="addTag()"
-          >
-            Adicionar
-          </button>
-        </div>
+            <input
+              type="text"
+              class="flex-1 min-w[300px] border border-gray-400 rounded-lg p-2 mt-2"
+              [(ngModel)]="tag"
+              name="tag"
+              placeholder="Insira uma tag e pressione Enter"
+              (keydown.enter)="addTag()"
+            />
+            <button
+              type="button"
+              class="bg-blue-500 text-white px-2 py-2 rounded-lg mt-2"
+              (click)="addTag()"
+            >
+              Adicionar
+            </button>
+          </div>
           <!-- Exibição das Tags Adicionadas -->
           <div class="flex flex-wrap mt-2 gap-2">
             <span
@@ -219,7 +377,7 @@
             </span>
           </div>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Data Limite</label>
           <input
@@ -264,7 +422,7 @@
             required
           />
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Descrição</label>
           <textarea
@@ -274,7 +432,7 @@
             rows="3"
           ></textarea>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Prioridade</label>
           <select
@@ -288,7 +446,7 @@
             <option value="high">Alta</option>
           </select>
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Usuário Vinculado</label>
           <input
@@ -299,7 +457,7 @@
             required
           />
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Data Limite</label>
           <input
@@ -310,7 +468,7 @@
             required
           />
         </div>
-        
+
         <div class="mb-4">
           <label class="block text-gray-700 mb-2">Tags</label>
           <div class="flex items-center gap-2">
@@ -347,7 +505,7 @@
             </span>
           </div>
         </div>
-        
+
         <!-- Ações do Formulário -->
         <div class="flex justify-end space-x-2">
           <button
