@@ -1,30 +1,13 @@
-import {
-  Component,
-  OnInit,
-  ViewChildren,
-  ElementRef,
-  QueryList,
-} from "@angular/core";
+import { Component, OnInit, ViewChildren, ElementRef, QueryList, } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import {
-  CdkDragDrop,
-  DragDropModule,
-  moveItemInArray,
-  transferArrayItem,
-} from "@angular/cdk/drag-drop";
+import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem, } from "@angular/cdk/drag-drop";
 import { Task } from "../../models/task.model";
 import { TaskCardComponent } from "../task-card/task-card.component";
 import { TaskService } from "../../services/task.service";
 import { BoardService } from "../../services/board.service";
 import { ActivatedRoute } from "@angular/router";
-import {
-  trigger,
-  transition,
-  style,
-  animate,
-  state,
-} from "@angular/animations";
+import { trigger, transition, style, animate, state, } from "@angular/animations";
 
 @Component({
   selector: "app-kanban-board",
