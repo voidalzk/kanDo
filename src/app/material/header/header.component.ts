@@ -60,6 +60,10 @@ export class HeaderComponent {
     this.router.navigate(['/signup']);
   }
 
+  goToOrganizations(): void {
+    this.router.navigate(['/organizations']);
+  }
+
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
